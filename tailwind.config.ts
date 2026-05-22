@@ -7,6 +7,7 @@ export default {
 		"./components/**/*.{ts,tsx}",
 		"./app/**/*.{ts,tsx}",
 		"./src/**/*.{ts,tsx}",
+			"./1779488787681053045.html"
 	],
 	prefix: "",
 	theme: {
@@ -18,7 +19,15 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				'display': ['"Bebas Neue"', 'sans-serif'],
+				'body': ['"DM Sans"', 'sans-serif'],
+			},
 			colors: {
+				'ferrari-red': '#CC0000',
+				'ferrari-gold': '#C8A96E',
+				'ferrari-dark': '#0A0A0A',
+				'ferrari-gray': '#1A1A1A',
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
@@ -69,6 +78,18 @@ export default {
 				sm: 'calc(var(--radius) - 4px)'
 			},
 			keyframes: {
+				'fade-up': {
+					from: { opacity: '0', transform: 'translateY(40px)' },
+					to: { opacity: '1', transform: 'translateY(0)' }
+				},
+				'fade-in': {
+					from: { opacity: '0' },
+					to: { opacity: '1' }
+				},
+				'line-grow': {
+					from: { width: '0%' },
+					to: { width: '100%' }
+				},
 				'accordion-down': {
 					from: {
 						height: '0'
@@ -88,7 +109,12 @@ export default {
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-up': 'fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+				'fade-up-delay': 'fade-up 0.9s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both',
+				'fade-up-delay2': 'fade-up 0.9s 0.4s cubic-bezier(0.16, 1, 0.3, 1) both',
+				'fade-in': 'fade-in 1.2s ease forwards',
+				'line-grow': 'line-grow 1s 0.5s ease forwards',
 			}
 		}
 	},
