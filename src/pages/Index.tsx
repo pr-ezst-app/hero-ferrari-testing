@@ -27,11 +27,39 @@ function useInView(threshold = 0.15) {
   return { ref, inView };
 }
 
+const FERRARI_API = "https://functions.poehali.dev/af57c815-cfd0-43c6-9f82-11cc5c3839cd";
+
+interface FerrariModel {
+  model: string;
+  year: number;
+  hp: number;
+  category: string;
+  engine: string;
+}
+
 export default function Index() {
   const [activeSection, setActiveSection] = useState("home");
   const [hovered, setHovered] = useState<number | null>(null);
+  const [ferrariModels, setFerrariModels] = useState<FerrariModel[]>([]);
+  const [loadingModels, setLoadingModels] = useState(true);
+  const [activeModelIdx, setActiveModelIdx] = useState(0);
   const aboutSection = useInView();
   const portfolioSection = useInView(0.1);
+
+  useEffect(() => {
+    fetch(`${FERRARI_API}?count=4`)
+      .then(r => r.json())
+      .then(data => { setFerrariModels(data.models); setLoadingModels(false); })
+      .catch(() => setLoadingModels(false));
+  }, []);
+
+  useEffect(() => {
+    if (ferrariModels.length === 0) return;
+    const interval = setInterval(() => {
+      setActiveModelIdx(i => (i + 1) % ferrariModels.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [ferrariModels]);
 
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -92,6 +120,56 @@ export default function Index() {
             Est. 1947 · Maranello
           </span>
           <div className="w-px h-20 bg-white/20" />
+        </div>
+
+        {/* LIVE FERRARI MODELS PANEL */}
+        <div className="absolute top-8 right-8 hidden lg:block w-72 animate-fade-in" style={{ animationDelay: "0.8s" }}>
+          <div className="border border-white/10 bg-black/60 backdrop-blur-md p-5">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-[#CC0000] text-[10px] tracking-[0.3em] uppercase font-semibold">Live · Today's Selection</span>
+              <span className="w-2 h-2 rounded-full bg-[#CC0000] animate-pulse" />
+            </div>
+            {loadingModels ? (
+              <div className="space-y-3">
+                {[1,2,3].map(i => (
+                  <div key={i} className="h-12 bg-white/5 animate-pulse" />
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {ferrariModels.map((car, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setActiveModelIdx(idx)}
+                    className={`w-full text-left px-3 py-3 border transition-all duration-300 group ${
+                      activeModelIdx === idx
+                        ? "border-[#CC0000]/60 bg-[#CC0000]/10"
+                        : "border-white/5 hover:border-white/20 bg-white/2"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className={`font-display text-sm tracking-wider transition-colors ${activeModelIdx === idx ? "text-white" : "text-white/60 group-hover:text-white/80"}`}>
+                        {car.model.toUpperCase()}
+                      </span>
+                      <span className="text-[#C8A96E] text-[10px] font-semibold">{car.hp} HP</span>
+                    </div>
+                    <div className="flex gap-3 mt-1">
+                      <span className="text-white/30 text-[10px]">{car.year}</span>
+                      <span className="text-white/30 text-[10px]">·</span>
+                      <span className="text-white/30 text-[10px]">{car.engine}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+            {!loadingModels && ferrariModels.length > 0 && (
+              <div className="mt-4 pt-3 border-t border-white/10">
+                <p className="text-white/20 text-[9px] tracking-[0.2em] uppercase">
+                  {ferrariModels[activeModelIdx]?.category} · Randomly Selected
+                </p>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="relative z-10 px-8 md:px-20 pb-28 max-w-4xl">
